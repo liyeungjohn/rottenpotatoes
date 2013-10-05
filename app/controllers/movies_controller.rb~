@@ -8,15 +8,30 @@ class MoviesController < ApplicationController
 
   def index
     @all_ratings = Movie.allRatings
-    @curr_ratings = params[:ratings]? params[:ratings].keys : []
 
-    @movies = Movie.find(:all, :conditions => {:rating => (@curr_ratings==[]? @all_ratings : @curr_ratings)})
+    if(params[:ratings] == nil && params[:order] == nil && (session[:ratings] != nil || session[:order] != nil))
+	if(params[:ratings] == nil && session[:ratings] != nil)
+	    params[:ratings] = session[:ratings]
+	end
+	if(params[:order] == nil && session[:order] != nil)
+	    params[:order] = session[:ratings]
+	end
+	flash.keep
+	redirect_to movies_path(:order => params[:order], :ratings => params[:ratings])
+    
+    else 
+	session[:order] = params[:order]
+    	session[:ratings] = params[:ratings]
+	@curr_ratings = params[:ratings]? params[:ratings].keys : []
 
-    if(params[:order] == "title")
-    	@movies = Movie.find(:all, :order => "title", :conditions => {:rating => (@curr_ratings==[]? @all_ratings : @curr_ratings)})
-    end
-    if(params[:order] == "release_date")
-    	@movies = Movie.find(:all, :order => "release_date", :conditions => {:rating => (@curr_ratings==[]? @all_ratings : @curr_ratings)})	
+    	@movies = Movie.find(:all, :conditions => {:rating => (@curr_ratings==[]? @all_ratings : @curr_ratings)})
+
+    	if(params[:order] == "title")
+    	    @movies = Movie.find(:all, :order => "title", :conditions => {:rating => (@curr_ratings==[]? @all_ratings : @curr_ratings)})
+    	end
+    	if(params[:order] == "release_date")
+    	    @movies = Movie.find(:all, :order => "release_date", :conditions => {:rating => (@curr_ratings==[]? @all_ratings : @curr_ratings)})	
+    	end
     end
   end
 
