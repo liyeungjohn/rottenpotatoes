@@ -9,7 +9,7 @@ class MoviesController < ApplicationController
   def index
     @all_ratings = Movie.allRatings
 
-    if(params[:ratings] == nil && params[:order] == nil && (session[:ratings] != nil || session[:order] != nil))
+   if(params[:ratings] == nil && params[:order] == nil && (session[:ratings] != nil || session[:order] != nil))
 	if(params[:ratings] == nil && session[:ratings] != nil)
 	    params[:ratings] = session[:ratings]
 	end
@@ -18,7 +18,13 @@ class MoviesController < ApplicationController
 	end
 	flash.keep
 	redirect_to movies_path(:order => params[:order], :ratings => params[:ratings])
-    
+
+    elsif (params[:commit] != nil)
+	if(params[:order] == nil && session[:order] != nil)
+	    params[:order] = session[:order]
+	end
+	redirect_to movies_path(:order => params[:order], :ratings => params[:ratings])
+
     else 
 	session[:order] = params[:order]
     	session[:ratings] = params[:ratings]
